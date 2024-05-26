@@ -138,13 +138,13 @@ resource "google_cloud_run_v2_service" "frontend_service" {
   }
 }
 
-# # Set the frontend service to allow only myself
-resource "google_cloud_run_service_iam_member" "auth_frontend" {
+# # Set the frontend service to allow all users
+resource "google_cloud_run_service_iam_member" "noauth_frontend" {
   location = google_cloud_run_v2_service.frontend_service.location
   project  = google_cloud_run_v2_service.frontend_service.project
   service  = google_cloud_run_v2_service.frontend_service.name
   role     = "roles/run.invoker"
-  member   = "christian.reiners.85@gmail.com"
+  member   = "allUsers"
 }
 
 
