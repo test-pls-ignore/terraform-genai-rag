@@ -36,12 +36,22 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from agent import init_agent, user_agents
 
+import firebase_admin
+from firebase_admin import auth
+
 BASE_HISTORY: list[BaseMessage] = [
     AIMessage(content="I am an SFO Airport Assistant, ready to assist you.")
 ]
 routes = APIRouter()
 templates = Jinja2Templates(directory="templates")
+default_app = firebase_admin.initialize_app()
 
+def verify_token(id_token):
+    try:
+        decoded_token = auth.verify_id_token(id_token)
+        return decoded_token
+    except Exception as e:
+        return None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -80,6 +90,12 @@ async def login_google(
     user_id_token = form_data.get("credential")
     if user_id_token is None:
         raise HTTPException(status_code=401, detail="No user credentials found")
+    
+    # Verify the token
+    decoded_token = verify_token(user_id_token)
+    if decoded_token is None:
+        raise HTTPException(status_code=401, detail="Invalid user credentials")
+
     # create new request session
     _ = await get_agent(request.session, str(user_id_token))
     print("Logged in to Google.")
