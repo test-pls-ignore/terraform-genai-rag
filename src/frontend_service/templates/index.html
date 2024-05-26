@@ -88,4 +88,30 @@ limitations under the License.
   document.getElementById('g_id_onload').setAttribute('data-login_uri', loginUri);
 </script>
 
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
+<script>
+  var firebaseConfig = {
+    apiKey: "AIzaSyA5UsNWr41BsTF0G75kjrR8qCZi7HHZ5ZE",
+    authDomain: "rag-test-424313.firebaseapp.com",
+    projectId: "rag-test-424313"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  function login() {
+    var email = document.getElementById('email').value;
+    var password = document.getElementById('password').value;
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        var user = userCredential.user;
+        var idToken = user.getIdToken();
+        // Store the idToken in session or local storage
+      })
+      .catch((error) => {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+      });
+  }
+</script>
+
 </html>
